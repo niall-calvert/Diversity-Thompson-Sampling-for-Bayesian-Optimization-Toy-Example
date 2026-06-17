@@ -1,4 +1,4 @@
-# Diversity-Filtered Batch Thompson Sampling
+## Diversity Filtered Batch Thompson Sampling
 
 This project builds on the BoTorch batch Thompson sampling tutorial for Bayesian optimization. In the baseline method, a Gaussian process model is fit to the observed data, a Sobol candidate set is generated, and `MaxPosteriorSampling` selects the next batch of points to evaluate using cholesky decomposition.
 
