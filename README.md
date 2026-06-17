@@ -10,7 +10,7 @@ X_pool = thompson_sampling(X_cand, num_samples=pool_size)
 
 where `pool_size` is larger than the final batch size, for example `pool_size = 5 * batch_size`. These points are all promising because each one was selected as the maximizer of a sampled posterior function over the candidate set.
 
-A diversity filter is then applied to this pool. The filter greedily builds the final batch by starting with the first Thompson-sampled point and then accepting later points only if they are at least `min_dist` away from all points already selected. The final batch is:
+A diversity filter is then applied to this pool. The filter greedily builds the final batch by starting with the first Thompson sampled point and then accepting later points only if they are at least `min_dist` away from all points already selected. The final batch is:
 
 ```python
 X_next = diversity_filter(X_pool, batch_size, min_dist=0.05)
