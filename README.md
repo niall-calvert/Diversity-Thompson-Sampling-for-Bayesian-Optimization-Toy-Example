@@ -1,23 +1,25 @@
-# Diversity Filtered Batch Thompson Sampling
+# Diversity-Filtered Batch Thompson Sampling
 
-This project implements a simple modification of batch Thompson sampling for Bayesian optimization. The baseline follows the BoTorch Thompson sampling tutorial: at each optimization step, a Gaussian process surrogate model is fit to the observed data, a large Sobol candidate set is generated over the normalized input domain, and `MaxPosteriorSampling` is used to choose the next batch of evaluation points.
+This project builds on the BoTorch batch Thompson sampling tutorial for Bayesian optimization. In the baseline method, a Gaussian process model is fit to the observed data, a Sobol candidate set is generated, and `MaxPosteriorSampling` selects the next batch of points to evaluate.
 
-The modification is to oversample Thompson candidates before selecting the final batch. Instead of directly requesting `batch_size` points from Thompson sampling, the algorithm first requests a larger pool of candidates:
+My modification oversamples Thompson candidates before choosing the final batch. Instead of sampling only `batch_size` points, it first samples a larger pool:
 
 ```python
 X_pool = thompson_sampling(X_cand, num_samples=pool_size)
 ```
 
-where `pool_size` is larger than the final batch size, for example `pool_size = 5 * batch_size`. These points are all promising because each one was selected as the maximizer of a sampled posterior function over the candidate set.
+For example, `pool_size = 5 * batch_size`.
 
-A diversity filter is then applied to this pool. The filter greedily builds the final batch by starting with the first Thompson sampled point and then accepting later points only if they are at least `min_dist` away from all points already selected. The final batch is:
+Then, a diversity filter selects the final batch by keeping points that are at least `min_dist` away from the points already chosen:
 
 ```python
 X_next = diversity_filter(X_pool, batch_size, min_dist=0.05)
 ```
 
-Only `X_next` is evaluated by the objective function.
+Only `X_next` is evaluated.
 
-The goal of this method is to reduce spatial redundancy in batch Bayesian optimization. Vanilla batch Thompson sampling can select points that are technically distinct but very close together in the input space. When evaluations are run in parallel, this can waste part of the batch exploring nearly the same region multiple times. By oversampling first and then selecting a more spread-out subset, the method encourages the batch to cover multiple promising regions while still using Thompson sampling to focus on high-value areas.
+The goal is to reduce redundancy in batch Bayesian optimization. Standard batch Thompson sampling can choose points that are very close together, which may waste parallel evaluations. By oversampling first and filtering for distance, the batch is encouraged to cover more promising regions.
 
-This approach is not intended to make batch generation faster. It may be slightly slower because it draws more Thompson samples. The intended benefit is improved sample efficiency through more diverse parallel evaluations.
+This method is not meant to be faster. It may be slightly slower because it samples more points. The intended benefit is better sample efficiency from more diverse batches.
+
+I also briefly included Cholesky decomposition at one point as part of the implementation, mainly to connect the sampling step to how correlated Gaussian posterior samples can be drawn.
