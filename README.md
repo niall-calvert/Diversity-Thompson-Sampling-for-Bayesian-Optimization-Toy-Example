@@ -1,6 +1,6 @@
 # Diversity-Filtered Batch Thompson Sampling
 
-This project builds on the BoTorch batch Thompson sampling tutorial for Bayesian optimization. In the baseline method, a Gaussian process model is fit to the observed data, a Sobol candidate set is generated, and `MaxPosteriorSampling` selects the next batch of points to evaluate.
+This project builds on the BoTorch batch Thompson sampling tutorial for Bayesian optimization. In the baseline method, a Gaussian process model is fit to the observed data, a Sobol candidate set is generated, and `MaxPosteriorSampling` selects the next batch of points to evaluate using cholesky decomposition.
 
 My modification oversamples Thompson candidates before choosing the final batch. Instead of sampling only `batch_size` points, it first samples a larger pool:
 
@@ -22,4 +22,3 @@ The goal is to reduce redundancy in batch Bayesian optimization. Standard batch 
 
 This method is not meant to be faster. It may be slightly slower because it samples more points. The intended benefit is better sample efficiency from more diverse batches.
 
-I also briefly included Cholesky decomposition at one point as part of the implementation, mainly to connect the sampling step to how correlated Gaussian posterior samples can be drawn.
